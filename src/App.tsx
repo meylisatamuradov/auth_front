@@ -1,25 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Home from "./Components/Home"
+import Login from "./Components/Login"
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect 
+} from "react-router-dom";
+
+const  PrivateRoute: React.FC<{
+  component: React.FC;
+  path: string;
+  exact: boolean;
+}> = (props) => {
+
+const condition = localStorage.getItem('jwt_token');
+
+return  condition ? (<Route  path={props.path}  exact={props.exact} component={props.component} />) : 
+  (<Redirect  to="/login"  />);
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Switch>
+      <Route path="/login" component={Login} />
+      <PrivateRoute  path="/"  component={Home}  exact  />
+    </Switch>
+  </Router>
   );
 }
 
