@@ -1,27 +1,27 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import validator from 'validator';
-import Alert from '@material-ui/lab/Alert';
+import React from "react";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import validator from "validator";
+import Alert from "@material-ui/lab/Alert";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -29,73 +29,71 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type MessageType={
-    text:string
-    show:boolean
-    severity:'error' | 'warning' | 'info' | 'success'
-}
+type MessageType = {
+  text: string;
+  show: boolean;
+  severity: "error" | "warning" | "info" | "success";
+};
 
 export default function Login() {
   const classes = useStyles();
-  const history = useHistory()
+  const history = useHistory();
   const [state, setState] = React.useState({
     email: "",
-    password:""
-  })
+    password: "",
+  });
   const [message, setMessage] = React.useState<MessageType>({
     text: "",
-    show:false,
-    severity:'error'
-  })
+    show: false,
+    severity: "error",
+  });
 
-  function handleChange(evt:React.ChangeEvent<any>):void {
-    setState({ 
-        ...state, 
-        [evt.target.name]: evt.target.value 
+  function handleChange(evt: React.ChangeEvent<any>): void {
+    setState({
+      ...state,
+      [evt.target.name]: evt.target.value,
     });
   }
-  async function handleSubmit(evt:React.ChangeEvent<any>):Promise<any> {
+  async function handleSubmit(evt: React.ChangeEvent<any>): Promise<any> {
     evt.preventDefault();
-    if (validator.isEmail(state.email) && state.password.length>1){
-        const rawResponse = await fetch('http://localhost:8000/auth/login', {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(state)
-          });
-        const content = await rawResponse.json();
-        if(content.success){
-            setMessage({
-                text:content.message,
-                severity:'success',
-                show:true
-            })
-
-            localStorage.setItem('jwt_token', content.token);
-            history.push("/") 
-
-        }else{
-            setMessage({
-                text:content.message,
-                severity:'error',
-                show:true
-            })
-        }
-        
-    }else{
+    if (validator.isEmail(state.email) && state.password.length > 1) {
+      const rawResponse = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(state),
+      });
+      const content = await rawResponse.json();
+      if (content.success) {
         setMessage({
-            text:'Please fill valid email and password',
-            severity:'error',
-            show:true
+          text: content.message,
+          severity: "success",
+          show: true,
         });
-        setTimeout(()=>{
-            setMessage({
-                ...message,
-                show:false
-            });
-        }, 3000)
+
+        localStorage.setItem("jwt_token", content.token);
+        history.push("/");
+      } else {
+        setMessage({
+          text: content.message,
+          severity: "error",
+          show: true,
+        });
+      }
+    } else {
+      setMessage({
+        text: "Please fill valid email and password",
+        severity: "error",
+        show: true,
+      });
+      setTimeout(() => {
+        setMessage({
+          ...message,
+          show: false,
+        });
+      }, 3000);
     }
   }
 
@@ -145,9 +143,9 @@ export default function Login() {
           </Button>
         </form>
       </div>
-      { message.show ?
-      <Alert severity={message.severity}>{message.text}</Alert> : null
-      }
+      {message.show ? (
+        <Alert severity={message.severity}>{message.text}</Alert>
+      ) : null}
     </Container>
   );
 }
